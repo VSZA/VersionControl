@@ -18,11 +18,13 @@ namespace gyak3
         {
             InitializeComponent();
             InitializeComponent();
-            lblFullName.Text = Resource1.LastName;
+            lblFullName.Text = Resource1.FullName;
             
             btnAdd.Text = Resource1.Add;
+            btnWrite.Text = Resource1.Write;
 
             listUsers.DataSource = users;
+
             listUsers.ValueMember = "ID";
             listUsers.DisplayMember = "FullName";
         }
@@ -39,6 +41,11 @@ namespace gyak3
                 FullName = txtFullName.Text,
             };
             users.Add(u);
+        }
+
+        private void btnWrite_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
         }
     }
 }
