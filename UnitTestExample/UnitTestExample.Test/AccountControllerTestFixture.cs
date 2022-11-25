@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Activities;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -30,6 +31,28 @@ namespace UnitTestExample.Test
 
             //Act
             var actualResult = accountController.ValidateEmail(email);
+
+            // Assert
+            Assert.AreEqual(expectedResult, actualResult);
+        }
+
+
+        [
+             Test,
+             TestCase("Abcabcabc", false),
+             TestCase("ABCABC123", false),
+             TestCase("abcabc123", false),
+            TestCase("abc", false),
+             TestCase("Abcabc123", true)
+         ]
+
+        public void TestValidatePassword(string password, bool expectedResult)
+        {
+            //Arrange
+            var accountController = new AccountController();
+
+            //Act
+            var actualResult = accountController.ValidatePassword(password);
 
             // Assert
             Assert.AreEqual(expectedResult, actualResult);
@@ -70,21 +93,20 @@ namespace UnitTestExample.Test
         public void TestRegisterValidateException(string email, string password)
         {
             // Arrange
-            var accountServiceMock = new Mock<IAccountManager>(MockBehavior.Strict);
-            accountServiceMock
-                .Setup(m => m.CreateAccount(It.IsAny<Account>()))
-                .Returns<Account>(a => a);
             var accountController = new AccountController();
-            accountController.AccountManager = accountServiceMock.Object;
 
             // Act
-            var actualResult = accountController.Register(email, password);
+            try
+            {
+                var actualResult = accountController.Register(email, password);
+                Assert.Fail();
+            }
+            catch (Exception ex)
+            {
+                Assert.IsInstanceOf<ValidationException>(ex);
+            }
 
             // Assert
-            Assert.AreEqual(email, actualResult.Email);
-            Assert.AreEqual(password, actualResult.Password);
-            Assert.AreNotEqual(Guid.Empty, actualResult.ID);
-            accountServiceMock.Verify(m => m.CreateAccount(actualResult), Times.Once);
         }
 
 
