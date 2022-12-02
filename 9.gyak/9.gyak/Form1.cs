@@ -18,12 +18,14 @@ namespace _9.gyak
         List<BirthProbability> BirthProbabilities;
         List<DeathProbability> DeathProbabilities;
         Random rng = new Random(1234);
+
+        List<int> Men = new List<int>();
+        List<int> Women = new List<int>();
+
         public Form1()
         {
             InitializeComponent();
-            Population = GetPopulation(@"C:\Temp\nép.csv");
-            BirthProbabilities = GetBirthProbabilities(@"C:\Temp\születés.csv");
-            DeathProbabilities = GetDeathProbabilities(@"C:\Temp\halál.csv");
+            
             
         }
 
@@ -43,9 +45,24 @@ namespace _9.gyak
                 int nbrOfFemales = (from x in Population
                                     where x.Gender == Gender.Female && x.IsAlive
                                     select x).Count();
+                Men.Add(nbrOfMales);
+                Women.Add(nbrOfFemales);
                 Console.WriteLine(
                     string.Format("Év:{0} Fiúk:{1} Lányok:{2}", year, nbrOfMales, nbrOfFemales));
             }
+            DisplayResults();
+        }
+
+        private void DisplayResults()
+        {
+            string j = "";
+            int i = 0;
+            for (int year = 2005; year <= numericUpDown1.Value; year++)
+            {
+                j = j + "\n" + year + "\n" + "\t" + "Men:" + Men[i] + "\n" + "\t" +"Women:"+Women[i];
+                i += 1;
+            }
+            richTextBox1.Text = j;
         }
 
         public List<Person> GetPopulation(string csvpath)
@@ -149,7 +166,27 @@ namespace _9.gyak
 
         private void bStart_Click(object sender, EventArgs e)
         {
+            Population = GetPopulation(textBox1.Text);
+            BirthProbabilities = GetBirthProbabilities(@"C:\Temp\születés.csv");
+            DeathProbabilities = GetDeathProbabilities(@"C:\Temp\halál.csv");
+            richTextBox1.Text = "";
+            Women.Clear();
+            Men.Clear();
+
             Simulation();
+        }
+
+        private void bBrowse_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.InitialDirectory = Application.StartupPath;
+
+            if (ofd.ShowDialog() != DialogResult.OK)
+            {
+                return;
+            }
+
+            textBox1.Text = ofd.FileName;
         }
     }
 }
